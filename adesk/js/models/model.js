@@ -6,7 +6,7 @@ Ember.Model = Ember.Object.extend(Ember.Evented, {
     api: function() {
         return this.rootURL + this.url;
     }.property('url'),
-    save: function() {
+    save: function(model) {
         var $this = this;
         var primaryKey = this.get('primaryKey')
         var record = {};
@@ -23,7 +23,13 @@ Ember.Model = Ember.Object.extend(Ember.Evented, {
             record[primaryKey] = model[primaryKey];
         }
 
-        return Ember.$.post(this.get('api'), record, function() {}, "json").then(function(data) {
+        return Ember.$.ajax({
+            type: 'post',
+            url: this.get('api'),
+            data: record,
+            dataType: 'json',
+            traditional: true
+        }).then(function(data) {
             return data;
         });
     },
@@ -35,10 +41,7 @@ Ember.Model = Ember.Object.extend(Ember.Evented, {
         var _id = $this.get('primaryKey');
         return Ember.$.ajax({
             type: 'delete',
-            url: $this.get('api'),
-            data: {
-                '_id': model[_id]
-            },
+            url: $this.get('api') + '/' + model.get(_id),
             dataType: 'json'
         }).then(function(data) {
             return data;
@@ -48,15 +51,19 @@ Ember.Model = Ember.Object.extend(Ember.Evented, {
         var $this = this;
         params = $this._filterParams(params);
         return Ember.$.getJSON(this.get('api'), params || {}).then(function(data) {
-            return data.res[$this.get('rootKey')];
+            var dataList = [];
+            Ember.$.each(data.res[$this.get('rootKey')], function(index, i) {
+                dataList.push(Ember.Object.create(i));
+            });
+            return dataList;
         });
     },
     findOne: function(id) {
         return Ember.$.getJSON(this.get('api') + '/' + id).then(function(data) {
-            return data.res[$this.get('rootKey')];
+            return Ember.Object.create(data.res[$this.get('rootKey')]);
         });
     },
-    _filterParams: function() {
+    _filterParams: function(params) {
         if (!params) return;
         for (var k in params) {
             if (params.hasOwnProperty(k) && !params[k]) {
@@ -68,15 +75,25 @@ Ember.Model = Ember.Object.extend(Ember.Evented, {
 });
 
 
-Ember.Store = Ember.Object.extend({
+Ember.Model.Store = Ember.Object.extend({
     modelFor: function(type) {
-        return this.container.lookupFactory('model:' + type);
+        var klass = this.container.lookupFactory('model:' + type);
+        return klass.create();
     },
     find: function(type, params) {
         return this.modelFor(type).find(params);
     },
     findOne: function(type, _id) {
         return this.modelFor(type).findOne(_id);
+    },
+    createRecord: function(type) {
+        return this.modelFor(type).createRecord();
+    },
+    deleteRecord: function(type, model) {
+        return this.modelFor(type).deleteRecord(model);
+    },
+    save: function(type, model) {
+        return this.modelFor(type).save(model);
     }
 });
 
@@ -84,7 +101,7 @@ Ember.onLoad('Ember.Application', function(Application) {
     Application.initializer({
         name: "store",
         initialize: function(container, application) {
-            application.register('store:main', container.lookupFactory('store:application') || Ember.Store);
+            application.register('store:main', container.lookupFactory('store:application') || Ember.Model.Store);
             application.inject('route', 'store', 'store:main');
             application.inject('controller', 'store', 'store:main');
         }

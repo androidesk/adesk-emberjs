@@ -1,4 +1,7 @@
-Ember.ButtonView = Ember.View.extend({
+var buttonView = Ember.View.extend({
+    didInsertElement: function() {
+        this.$().html('save');
+    },
     tagName: 'button',
     classNames: ['ui', 'button', 'small'],
     classNameBindings: ['isLoading:loading'],
@@ -7,3 +10,5 @@ Ember.ButtonView = Ember.View.extend({
     attributeBindings: ['style'],
     style: '',
 });
+
+Ember.Handlebars.helper('ui-button', buttonView);

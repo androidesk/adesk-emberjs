@@ -21,6 +21,7 @@ module.exports = function(grunt) {
         ],
         // the location of the resulting js file
         dest: 'dist/js/<%= pkg.name %>.js'
+        // dest: '/home/zhyq/adesk/adesk-ad/god-backend/static/js/<%= pkg.name %>.js'
       },
       app: {
         src: [
@@ -121,7 +122,10 @@ module.exports = function(grunt) {
           templateNamespace: 'Handlebars',
           concatenate: true,
           precompile: true,
-          templateBasePath: /adesk\/templates\//
+          templateBasePath: "",
+          templateName: function(name){
+            return name.replace('adesk/js/templates/','');
+          }
         },
         files: {
           'dist/js/<%= pkg.name %>-template.js': 'adesk/js/templates/**/*.hbs'

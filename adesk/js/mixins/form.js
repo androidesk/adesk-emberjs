@@ -3,9 +3,10 @@ var FormMixin = Ember.Mixin.create({
     isSuccess: false,
     isError: false,
     actions: {
-        saveForm: function(modelName, record) {
+        saveForm: function(record) {
             var $this = this;
-            this.store.find(modelName).save(record).then(function(data) {
+            console.log($this.modelName);
+            this.store.save($this.modelName, record).then(function(data) {
                 var error = '你的网络有问题或网站的服务出了问题';
                 if (data.code === 0) {
                     $this.toggleProperty('isSuccess');
@@ -78,4 +79,4 @@ var FormMixin = Ember.Mixin.create({
 });
 
 
-Ember.FormObject = Ember.ObjectController.extend(FormMixin);
+Ember.FormController = Ember.ObjectController.extend(FormMixin);

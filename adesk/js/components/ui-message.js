@@ -1,4 +1,4 @@
-Ember.MessageView = Ember.View.extend({
+var messageView = Ember.View.extend({
     tagName: 'div',
     classNames: ['ui', 'message'],
     classNameBindings: ['isSuccess:positive', 'isError:negative', 'isTip::hidden'],
@@ -12,3 +12,6 @@ Ember.MessageView = Ember.View.extend({
     style: '',
     layoutName: 'components/ui-message-view',
 });
+
+
+Ember.Handlebars.helper('ui-message', messageView);

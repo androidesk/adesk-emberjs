@@ -61,13 +61,13 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
             var $this = this;
             this.store.find(modelName).save(record).then(function(data) {
                 var error = '你的网络有问题或网站的服务出了问题';
-                if (data['code'] === 0) {
+                if (data.code === 0) {
                     $this.toggleProperty('isSuccess');
                     $this.set('msg', '修改成功');
                     $this.toggleProperty('isEditMode');
                 } else {
                     $this.toggleProperty('isError');
-                    $this.set('msg', data['msg'] || error);
+                    $this.set('msg', data.msg || error);
                 }
             }, function(reason) {
                 $this.toggleProperty('isError');
@@ -185,7 +185,7 @@ Ember.Route = Ember.Route.extend(paginationMixinRoute);;Ember.Model = Ember.Obje
     api: function() {
         return this.rootURL + this.url;
     }.property('url'),
-    save: function() {
+    save: function(model) {
         var $this = this;
         var primaryKey = this.get('primaryKey')
         var record = {};
@@ -256,6 +256,15 @@ Ember.Store = Ember.Object.extend({
     },
     findOne: function(type, _id) {
         return this.modelFor(type).findOne(_id);
+    },
+    createRecord: function(type) {
+        return this.modelFor(type).createRecord();
+    },
+    deleteRecord: function(type, model) {
+        return this.modelFor(type).deleteRecord(model);
+    },
+    save: function(type, model) {
+        return this.modelFor(type).save(model);
     }
 });
 
