@@ -1,4 +1,4 @@
-Ember.TEMPLATES["adesk/js/templates/components/ui-message-view"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+Ember.TEMPLATES["components/ui-message-view"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var buffer = '', stack1;
@@ -12,7 +12,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   
 });
 
-Ember.TEMPLATES["adesk/js/templates/components/ui-pagination-view"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+Ember.TEMPLATES["components/ui-pagination-view"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var buffer = '', escapeExpression=this.escapeExpression;
@@ -25,7 +25,10 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   data.buffer.push(" >\n  <i class=\"right arrow icon\"></i>\n  next page\n</div>");
   return buffer;
   
-});;Ember.ButtonView = Ember.View.extend({
+});;var buttonView = Ember.View.extend({
+    didInsertElement: function() {
+        this.$().html('save');
+    },
     tagName: 'button',
     classNames: ['ui', 'button', 'small'],
     classNameBindings: ['isLoading:loading'],
@@ -33,7 +36,9 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
     isLoadingBinding: 'controller.isSaving',
     attributeBindings: ['style'],
     style: '',
-});;Ember.MessageView = Ember.View.extend({
+});
+
+Ember.Handlebars.helper('ui-button', buttonView);;var messageView = Ember.View.extend({
     tagName: 'div',
     classNames: ['ui', 'message'],
     classNameBindings: ['isSuccess:positive', 'isError:negative', 'isTip::hidden'],
@@ -46,20 +51,27 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
     attributeBindings: ['style'],
     style: '',
     layoutName: 'components/ui-message-view',
-});;Ember.PaginationView = Ember.View.extend({
+});
+
+
+Ember.Handlebars.helper('ui-message', messageView);;var paginationView = Ember.View.extend({
     tagName: 'div',
     classNames: [],
     attributeBindings: ['style'],
     style: 'position:fixed; bottom:0px;left:50%;margin-left:-150px;z-index:7',
     layoutName: 'components/ui-pagination-view',
-});;var FormMixin = Ember.Mixin.create({
+});
+
+
+Ember.Handlebars.helper('ui-pagination', paginationView);;var FormMixin = Ember.Mixin.create({
     isSaving: false,
     isSuccess: false,
     isError: false,
     actions: {
-        saveForm: function(modelName, record) {
+        saveForm: function(record) {
             var $this = this;
-            this.store.find(modelName).save(record).then(function(data) {
+            console.log($this.modelName);
+            this.store.save($this.modelName, record).then(function(data) {
                 var error = '你的网络有问题或网站的服务出了问题';
                 if (data.code === 0) {
                     $this.toggleProperty('isSuccess');
@@ -132,7 +144,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
 });
 
 
-Ember.FormObject = Ember.ObjectController.extend(FormMixin);;var paginationControllerMixin = Ember.Mixin.create({
+Ember.FormController = Ember.ObjectController.extend(FormMixin);;var paginationControllerMixin = Ember.Mixin.create({
     queryParams: ['skip'],
     skip: 0,
     limit: 20,
@@ -202,7 +214,13 @@ Ember.Route = Ember.Route.extend(paginationMixinRoute);;Ember.Model = Ember.Obje
             record[primaryKey] = model[primaryKey];
         }
 
-        return Ember.$.post(this.get('api'), record, function() {}, "json").then(function(data) {
+        return Ember.$.ajax({
+            type: 'post',
+            url: this.get('api'),
+            data: record,
+            dataType: 'json',
+            traditional: true
+        }).then(function(data) {
             return data;
         });
     },
@@ -214,10 +232,7 @@ Ember.Route = Ember.Route.extend(paginationMixinRoute);;Ember.Model = Ember.Obje
         var _id = $this.get('primaryKey');
         return Ember.$.ajax({
             type: 'delete',
-            url: $this.get('api'),
-            data: {
-                '_id': model[_id]
-            },
+            url: $this.get('api') + '/' + model.get(_id),
             dataType: 'json'
         }).then(function(data) {
             return data;
@@ -227,15 +242,19 @@ Ember.Route = Ember.Route.extend(paginationMixinRoute);;Ember.Model = Ember.Obje
         var $this = this;
         params = $this._filterParams(params);
         return Ember.$.getJSON(this.get('api'), params || {}).then(function(data) {
-            return data.res[$this.get('rootKey')];
+            var dataList = [];
+            Ember.$.each(data.res[$this.get('rootKey')], function(index, i) {
+                dataList.push(Ember.Object.create(i));
+            });
+            return dataList;
         });
     },
     findOne: function(id) {
         return Ember.$.getJSON(this.get('api') + '/' + id).then(function(data) {
-            return data.res[$this.get('rootKey')];
+            return Ember.Object.create(data.res[$this.get('rootKey')]);
         });
     },
-    _filterParams: function() {
+    _filterParams: function(params) {
         if (!params) return;
         for (var k in params) {
             if (params.hasOwnProperty(k) && !params[k]) {
@@ -247,9 +266,10 @@ Ember.Route = Ember.Route.extend(paginationMixinRoute);;Ember.Model = Ember.Obje
 });
 
 
-Ember.Store = Ember.Object.extend({
+Ember.Model.Store = Ember.Object.extend({
     modelFor: function(type) {
-        return this.container.lookupFactory('model:' + type);
+        var klass = this.container.lookupFactory('model:' + type);
+        return klass.create();
     },
     find: function(type, params) {
         return this.modelFor(type).find(params);
@@ -272,7 +292,7 @@ Ember.onLoad('Ember.Application', function(Application) {
     Application.initializer({
         name: "store",
         initialize: function(container, application) {
-            application.register('store:main', container.lookupFactory('store:application') || Ember.Store);
+            application.register('store:main', container.lookupFactory('store:application') || Ember.Model.Store);
             application.inject('route', 'store', 'store:main');
             application.inject('controller', 'store', 'store:main');
         }
