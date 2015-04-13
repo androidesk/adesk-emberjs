@@ -1,6 +1,6 @@
 var buttonView = Ember.View.extend({
     didInsertElement: function() {
-        this.$().html('save');
+        //pass
     },
     tagName: 'button',
     classNames: ['ui', 'button', 'small'],
@@ -9,6 +9,7 @@ var buttonView = Ember.View.extend({
     isLoadingBinding: 'controller.isSaving',
     attributeBindings: ['style'],
     style: '',
+    layoutName: 'components/ui-button-view'
 });
 
 Ember.Handlebars.helper('ui-button', buttonView);;var messageView = Ember.View.extend({
@@ -43,13 +44,13 @@ Ember.Handlebars.helper('ui-pagination', paginationView);;var FormMixin = Ember.
     actions: {
         saveForm: function(record) {
             var $this = this;
-            console.log($this.modelName);
             this.store.save($this.modelName, record).then(function(data) {
                 var error = '你的网络有问题或网站的服务出了问题';
                 if (data.code === 0) {
                     $this.toggleProperty('isSuccess');
                     $this.set('msg', '修改成功');
-                    $this.toggleProperty('isEditMode');
+                    $this.send('_actionEdit', false);
+                    $this.send('_actionCreate', false);
                 } else {
                     $this.toggleProperty('isError');
                     $this.set('msg', data.msg || error);
@@ -60,10 +61,34 @@ Ember.Handlebars.helper('ui-pagination', paginationView);;var FormMixin = Ember.
             });
         },
         createForm: function() {
-            this.toggleProperty('isCreateMode');
+            this.send('_actionCreate', true);
         },
         edit: function() {
-            this.toggleProperty('isEditMode');
+            this.send('_actionEdit', true);
+        },
+        _actionCreate: function(status) {
+            this.set('isSaving', false);
+            this.set('isError', false);
+            this.set('isSuccess', false);
+            this.set('isEditMode', false);
+            var modal = "#newForm"
+            if (status) {
+                Ember.$(modal).modal('show');
+            } else {
+                Ember.$(modal).modal('hide');
+            }
+        },
+        _actionEdit: function(status) {
+            this.set('isSaving', false);
+            this.set('isError', false);
+            this.set('isSuccess', false);
+            this.set('isCreateMode', false);
+            var modal = '#' + this.get('_id');
+            if (status) {
+                Ember.$(modal).modal('show');
+            } else {
+                Ember.$(modal).modal('hide');
+            }
         }
     },
     isSuccessObserver: Ember.immediateObserver('isSuccess', function() {
@@ -88,30 +113,12 @@ Ember.Handlebars.helper('ui-pagination', paginationView);;var FormMixin = Ember.
         return this.get('isSuccess') || this.get('isError');
     }.property('isSuccess', 'isError'),
     isEditMode: false,
-    isEditModeObserver: Ember.immediateObserver('isEditMode', function() {
-        this.set('isSaving', false);
-        this.set('isError', false);
-        this.set('isSuccess', false);
-        this.set('isCreateMode', false);
-        var modal = '#' + this.get('_id');
-        if (this.get('isEditMode')) {
-            Ember.$(modal).modal('show');
-        } else {
-            Ember.$(modal).modal('hide');
-        }
-    }),
     isCreateMode: false,
+    isEditModeObserver: Ember.immediateObserver('isEditMode', function() {
+        this.send('_actionEdit', this.get('isEditMode'));
+    }),
     isCreateModeObserver: Ember.immediateObserver('isCreateMode', function() {
-        this.set('isSaving', false);
-        this.set('isError', false);
-        this.set('isSuccess', false);
-        this.set('isEditMode', false);
-        var modal = "#newForm"
-        if (this.get('isCreateMode')) {
-            Ember.$(modal).modal('show');
-        } else {
-            Ember.$(modal).modal('hide');
-        }
+        this.send('_actionCreate', this.get('isCreateMode'));
     }),
     msg: '',
 });
