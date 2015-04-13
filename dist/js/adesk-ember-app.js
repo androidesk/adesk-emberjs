@@ -66,6 +66,18 @@ Ember.Handlebars.helper('ui-pagination', paginationView);;var FormMixin = Ember.
         edit: function() {
             this.send('_actionEdit', true);
         },
+        create: function() {
+            this.set('model', this.store.createRecord(this.modelName));
+            this.send('createForm');
+        },
+        delete: function() {
+            var $this = this;
+            this.store.deleteRecord($this.modelName, $this.get('model')).then(function(data) {
+                if (data['code'] === 0) {
+                    $this.get('parentController').get("content").removeObject($this.get('model'));
+                }
+            });
+        },
         _actionCreate: function(status) {
             this.set('isSaving', false);
             this.set('isError', false);
