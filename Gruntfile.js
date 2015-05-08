@@ -31,7 +31,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-ember-templates');
 
   grunt.registerTask('build', ['emberTemplates', 'concat', 'uglify', 'less', 'jshint']);
-  grunt.registerTask('dev', ['bower', 'copy:adeskAd', 'watch']);
+  grunt.registerTask('dev', ['bower', 'copy:adeskAd','copy:laohan','watch']);
 
   grunt.registerTask('default', ['build']);
 

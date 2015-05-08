@@ -41,6 +41,10 @@ Ember.Handlebars.helper('ui-pagination', paginationView);;var FormMixin = Ember.
     isSaving: false,
     isSuccess: false,
     isError: false,
+    needs: ['application'],
+    application: function(){
+        return this.get('controllers.application');
+    }.property(),
     actions: {
         saveForm: function(record) {
             var $this = this;
@@ -73,7 +77,7 @@ Ember.Handlebars.helper('ui-pagination', paginationView);;var FormMixin = Ember.
         delete: function() {
             var $this = this;
             this.store.deleteRecord($this.modelName, $this.get('model')).then(function(data) {
-                if (data['code'] === 0) {
+                if (data.code === 0) {
                     $this.get('parentController').get("content").removeObject($this.get('model'));
                 }
             });
@@ -83,7 +87,7 @@ Ember.Handlebars.helper('ui-pagination', paginationView);;var FormMixin = Ember.
             this.set('isError', false);
             this.set('isSuccess', false);
             this.set('isEditMode', false);
-            var modal = "#newForm"
+            var modal = "#"+this.get('formModalId');
             if (status) {
                 Ember.$(modal).modal('show');
             } else {
@@ -121,6 +125,9 @@ Ember.Handlebars.helper('ui-pagination', paginationView);;var FormMixin = Ember.
             this.set('isError', false);
         }
     }),
+    formModalId: function(){
+        return 'form-'+this.modelName;
+    }.property(),
     isTip: function() {
         return this.get('isSuccess') || this.get('isError');
     }.property('isSuccess', 'isError'),
@@ -202,13 +209,17 @@ Ember.Route = Ember.Route.extend(paginationMixinRoute);;Ember.Model = Ember.Obje
         });
 
         //check if is new data
+        var url = this.get('api');
+        var method = 'post';
         if (model[primaryKey]) {
             record[primaryKey] = model[primaryKey];
+            url = this.get('api')+'/'+model[primaryKey];
+            method = 'put'
         }
 
         return Ember.$.ajax({
-            type: 'post',
-            url: this.get('api'),
+            type: method,
+            url: url,
             data: record,
             dataType: 'json',
             traditional: true

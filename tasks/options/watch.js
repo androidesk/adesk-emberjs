@@ -19,6 +19,6 @@ module.exports = {
     },
     devCopy: {
         files: 'dist/js/adesk-ember.js',
-        tasks: ['copy:adeskAd']
+        tasks: ['copy:adeskAd','copy:laohan']
     }
 }
