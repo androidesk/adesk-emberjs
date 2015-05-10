@@ -1,6 +1,6 @@
 module.exports = {
   options: {
-    separator: ';'
+    separator: ''
   },
   dist: {
     // the file to concatenate

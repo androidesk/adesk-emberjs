@@ -1,4 +1,5 @@
-Ember.TEMPLATES["components/ui-button-view"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+Ember.TEMPLATES["components/ui-button-view"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data
+/**/) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var stack1;
@@ -10,7 +11,8 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   
 });
 
-Ember.TEMPLATES["components/ui-message-view"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+Ember.TEMPLATES["components/ui-message-view"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data
+/**/) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var buffer = '', stack1;
@@ -24,7 +26,8 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   
 });
 
-Ember.TEMPLATES["components/ui-pagination-view"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+Ember.TEMPLATES["components/ui-pagination-view"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data
+/**/) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var buffer = '', escapeExpression=this.escapeExpression;
@@ -37,7 +40,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   data.buffer.push(" >\n  <i class=\"right arrow icon\"></i>\n  next page\n</div>");
   return buffer;
   
-});;var buttonView = Ember.View.extend({
+});var buttonView = Ember.View.extend({
     didInsertElement: function() {
         //pass
     },
@@ -51,7 +54,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
     layoutName: 'components/ui-button-view'
 });
 
-Ember.Handlebars.helper('ui-button', buttonView);;var messageView = Ember.View.extend({
+Ember.Handlebars.helper('ui-button', buttonView);var messageView = Ember.View.extend({
     tagName: 'div',
     classNames: ['ui', 'message'],
     classNameBindings: ['isSuccess:positive', 'isError:negative', 'isTip::hidden'],
@@ -67,7 +70,7 @@ Ember.Handlebars.helper('ui-button', buttonView);;var messageView = Ember.View.e
 });
 
 
-Ember.Handlebars.helper('ui-message', messageView);;var paginationView = Ember.View.extend({
+Ember.Handlebars.helper('ui-message', messageView);var paginationView = Ember.View.extend({
     tagName: 'div',
     classNames: [],
     attributeBindings: ['style'],
@@ -76,7 +79,7 @@ Ember.Handlebars.helper('ui-message', messageView);;var paginationView = Ember.V
 });
 
 
-Ember.Handlebars.helper('ui-pagination', paginationView);;var FormMixin = Ember.Mixin.create({
+Ember.Handlebars.helper('ui-pagination', paginationView);var FormMixin = Ember.Mixin.create({
     isSaving: false,
     isSuccess: false,
     isError: false,
@@ -87,8 +90,8 @@ Ember.Handlebars.helper('ui-pagination', paginationView);;var FormMixin = Ember.
     actions: {
         saveForm: function(record) {
             var $this = this;
+            var error = '你的网络有问题或网站的服务出了问题';
             this.store.save($this.modelName, record).then(function(data) {
-                var error = '你的网络有问题或网站的服务出了问题';
                 if (data.code === 0) {
                     $this.toggleProperty('isSuccess');
                     $this.set('msg', '修改成功');
@@ -182,7 +185,7 @@ Ember.Handlebars.helper('ui-pagination', paginationView);;var FormMixin = Ember.
 });
 
 
-Ember.FormController = Ember.ObjectController.extend(FormMixin);;var paginationControllerMixin = Ember.Mixin.create({
+Ember.FormController = Ember.ObjectController.extend(FormMixin);var paginationController = Ember.Mixin.create({
     queryParams: ['skip'],
     skip: 0,
     limit: 20,
@@ -216,7 +219,7 @@ Ember.FormController = Ember.ObjectController.extend(FormMixin);;var paginationC
 });
 
 
-var paginationMixinRoute = Ember.Mixin.create({
+var paginationRoute = Ember.Mixin.create({
     queryParams: {
         skip: {
             refreshModel: true
@@ -225,9 +228,8 @@ var paginationMixinRoute = Ember.Mixin.create({
 });
 
 
-Ember.ArrayController = Ember.ArrayController.extend(paginationControllerMixin);
-
-Ember.Route = Ember.Route.extend(paginationMixinRoute);;Ember.Model = Ember.Object.extend(Ember.Evented, {
+/*Ember.ArrayController = Ember.ArrayController.extend(paginationMixin);
+Ember.Route = Ember.Route.extend(paginationMixinRoute);*/Ember.Model = Ember.Object.extend(Ember.Evented, {
     rootURL: '',
     rootKey: '',
     url: '',
