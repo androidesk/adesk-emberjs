@@ -212,7 +212,7 @@ Ember.Route = Ember.Route.extend(paginationMixinRoute);*/Ember.Model = Ember.Obj
         var method = 'post';
         if (model[primaryKey]) {
             record[primaryKey] = model[primaryKey];
-            url = this.get('api')+'/'+model[primaryKey];
+            url = this.get('api') + '/' + model[primaryKey];
             method = 'put'
         }
 
@@ -287,6 +287,17 @@ Ember.Model.Store = Ember.Object.extend({
     },
     save: function(type, model) {
         return this.modelFor(type).save(model);
+    },
+    emptyAttrs: function(type, model, filterKeys) {
+        var emptyKeys = [];
+        Ember.$.each(filterKeys || Ember.keys(this.modelFor(type).model), function(index, key) {
+            if (typeof key === "string") {
+                if (Ember.isEmpty(model.get(key))) {
+                    emptyKeys.push(key);
+                }
+            }
+        });
+        return emptyKeys;
     }
 });
 
