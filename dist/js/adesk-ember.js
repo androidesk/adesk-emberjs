@@ -1,5 +1,4 @@
-Ember.TEMPLATES["components/ui-button-view"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data
-/**/) {
+Ember.TEMPLATES["components/ui-button-view"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var stack1;
@@ -11,8 +10,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   
 });
 
-Ember.TEMPLATES["components/ui-message-view"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data
-/**/) {
+Ember.TEMPLATES["components/ui-message-view"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var buffer = '', stack1;
@@ -26,8 +24,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   
 });
 
-Ember.TEMPLATES["components/ui-pagination-view"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data
-/**/) {
+Ember.TEMPLATES["components/ui-pagination-view"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var buffer = '', escapeExpression=this.escapeExpression;
@@ -330,9 +327,16 @@ Ember.Model.Store = Ember.Object.extend({
     save: function(type, model) {
         return this.modelFor(type).save(model);
     },
-    emptyAttrs: function(type, model, filterKeys) {
+    emptyAttrs: function(type, model, filterKeys, unfilterKeys) {
         var emptyKeys = [];
-        Ember.$.each(filterKeys || Ember.keys(this.modelFor(type).model), function(index, key) {
+        var filtered = filterKeys || Ember.keys(this.modelFor(type).model);
+        var unfiltered = unfilterKeys || [];
+        
+        var finallyfiltered = filtered.filter(function(item, index){
+            return unfiltered.indexOf(item) === -1;
+        });
+
+        Ember.$.each(finallyfiltered, function(index, key) {
             if (typeof key === "string") {
                 if (Ember.isEmpty(model.get(key))) {
                     emptyKeys.push(key);
