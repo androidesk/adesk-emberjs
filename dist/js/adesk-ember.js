@@ -81,26 +81,38 @@ Ember.Handlebars.helper('ui-pagination', paginationView);var FormMixin = Ember.M
     isSuccess: false,
     isError: false,
     needs: ['application'],
-    application: function(){
+    application: function() {
         return this.get('controllers.application');
     }.property(),
     actions: {
-        saveForm: function(record) {
+        saveForm: function(record, successCallback, errorCallback) {
             var $this = this;
             var error = '你的网络有问题或网站的服务出了问题';
             this.store.save($this.modelName, record).then(function(data) {
+                $this.set('isSaving', false);
                 if (data.code === 0) {
-                    $this.toggleProperty('isSuccess');
+                    $this.set('isSuccess', true);
                     $this.set('msg', '修改成功');
                     $this.send('_actionEdit', false);
                     $this.send('_actionCreate', false);
+                    if (typeof successCallback === "function") {
+                        successCallback();
+                    }
                 } else {
-                    $this.toggleProperty('isError');
+                    $this.set('isError', true);
                     $this.set('msg', data.msg || error);
+                    if (typeof errorCallback === "function") {
+                        errorCallback();
+                    }
                 }
             }, function(reason) {
-                $this.toggleProperty('isError');
+                $this.set('isSaving', false);
+                $this.set('isSuccess', false);
+                $this.set('isError', true);
                 $this.set('msg', error);
+                if (typeof errorCallback === "function") {
+                    errorCallback();
+                }
             });
         },
         createForm: function() {
@@ -126,7 +138,7 @@ Ember.Handlebars.helper('ui-pagination', paginationView);var FormMixin = Ember.M
             this.set('isError', false);
             this.set('isSuccess', false);
             this.set('isEditMode', false);
-            var modal = "#"+this.get('formModalId');
+            var modal = "#" + this.get('formModalId');
             if (status) {
                 Ember.$(modal).modal('show');
             } else {
@@ -164,8 +176,8 @@ Ember.Handlebars.helper('ui-pagination', paginationView);var FormMixin = Ember.M
             this.set('isError', false);
         }
     }),
-    formModalId: function(){
-        return 'form-'+this.modelName;
+    formModalId: function() {
+        return 'form-' + this.modelName;
     }.property(),
     isTip: function() {
         return this.get('isSuccess') || this.get('isError');
