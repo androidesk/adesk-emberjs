@@ -46,7 +46,7 @@ Ember.Handlebars.helper('ui-pagination', paginationView);var FormMixin = Ember.M
         return this.get('controllers.application');
     }.property(),
     actions: {
-        saveForm: function(record, successCallback, errorCallback) {
+        saveForm: function(record) {
             var $this = this;
             var error = '你的网络有问题或网站的服务出了问题';
             this.store.save($this.modelName, record).then(function(data) {
@@ -56,24 +56,24 @@ Ember.Handlebars.helper('ui-pagination', paginationView);var FormMixin = Ember.M
                     $this.set('msg', '修改成功');
                     $this.send('_actionEdit', false);
                     $this.send('_actionCreate', false);
-                    if (typeof successCallback === "function") {
-                        successCallback();
-                    }
+                    try {
+                        $this.send('successCallback');
+                    } catch (e) {}
                 } else {
                     $this.set('isError', true);
                     $this.set('msg', data.msg || error);
-                    if (typeof errorCallback === "function") {
-                        errorCallback();
-                    }
+                    try {
+                        $this.send('errorCallback');
+                    } catch (e) {}
                 }
             }, function(reason) {
                 $this.set('isSaving', false);
                 $this.set('isSuccess', false);
                 $this.set('isError', true);
                 $this.set('msg', error);
-                if (typeof errorCallback === "function") {
-                    errorCallback();
-                }
+                try {
+                    $this.send('errorCallback');
+                } catch (e) {}
             });
         },
         createForm: function() {
