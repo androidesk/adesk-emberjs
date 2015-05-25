@@ -1,3 +1,5 @@
+import Ember from "ember";
+
 var messageView = Ember.View.extend({
     tagName: 'div',
     classNames: ['ui', 'message'],
@@ -10,8 +12,10 @@ var messageView = Ember.View.extend({
     isTipBinding: 'controller.isTip',
     attributeBindings: ['style'],
     style: '',
-    layoutName: 'components/ui-message-view',
+    layoutName: 'components/ui-message'
 });
 
 
 Ember.Handlebars.helper('ui-message', messageView);
+
+export default messageView;

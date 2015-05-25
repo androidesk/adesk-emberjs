@@ -1,3 +1,5 @@
+import Ember from "ember";
+
 var paginationController = Ember.Mixin.create({
     queryParams: ['skip'],
     skip: 0,
@@ -41,5 +43,4 @@ var paginationRoute = Ember.Mixin.create({
 });
 
 
-/*Ember.ArrayController = Ember.ArrayController.extend(paginationMixin);
-Ember.Route = Ember.Route.extend(paginationMixinRoute);*/
+export { paginationRoute, paginationController}

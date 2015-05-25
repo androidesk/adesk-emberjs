@@ -1,3 +1,5 @@
+import Ember from "ember";
+
 var FormMixin = Ember.Mixin.create({
     isSaving: false,
     isSuccess: false,
@@ -117,3 +119,6 @@ var FormMixin = Ember.Mixin.create({
 
 
 Ember.FormController = Ember.ObjectController.extend(FormMixin);
+
+
+export default FormMixin;

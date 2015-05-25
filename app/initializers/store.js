@@ -1,3 +1,5 @@
+import Ember from "ember";
+
 Ember.Model = Ember.Object.extend(Ember.Evented, {
     rootURL: '',
     rootKey: '',
@@ -8,7 +10,7 @@ Ember.Model = Ember.Object.extend(Ember.Evented, {
     }.property('url'),
     save: function(model) {
         var $this = this;
-        var primaryKey = this.get('primaryKey')
+        var primaryKey = this.get('primaryKey');
         var record = {};
 
         //filter model data
@@ -24,7 +26,7 @@ Ember.Model = Ember.Object.extend(Ember.Evented, {
         if (model[primaryKey]) {
             record[primaryKey] = model[primaryKey];
             url = this.get('api') + '/' + model[primaryKey];
-            method = 'put'
+            method = 'put';
         }
 
         return Ember.$.ajax({
@@ -63,12 +65,13 @@ Ember.Model = Ember.Object.extend(Ember.Evented, {
         });
     },
     findOne: function(id) {
-        return Ember.$.getJSON(this.get('api') + '/' + id).then(function(data) {
+        var $this = this;
+        return Ember.$.getJSON($this.get('api') + '/' + id).then(function(data) {
             return Ember.Object.create(data.res[$this.get('rootKey')]);
         });
     },
     _filterParams: function(params) {
-        if (!params) return;
+        if (!params) {return;}
         for (var k in params) {
             if (params.hasOwnProperty(k) && !params[k]) {
                 delete params[k];
@@ -104,7 +107,7 @@ Ember.Model.Store = Ember.Object.extend({
         var filtered = filterKeys || Ember.keys(this.modelFor(type).model);
         var unfiltered = unfilterKeys || [];
         
-        var finallyfiltered = filtered.filter(function(item, index){
+        var finallyfiltered = filtered.filter(function(item){
             return unfiltered.indexOf(item) === -1;
         });
 
@@ -119,13 +122,13 @@ Ember.Model.Store = Ember.Object.extend({
     }
 });
 
-Ember.onLoad('Ember.Application', function(Application) {
-    Application.initializer({
-        name: "store",
-        initialize: function(container, application) {
-            application.register('store:main', container.lookupFactory('store:application') || Ember.Model.Store);
-            application.inject('route', 'store', 'store:main');
-            application.inject('controller', 'store', 'store:main');
-        }
-    });
-});
+export function initialize(container, application) {
+  application.register('store:main', Ember.Model.Store, {instantiate: true});
+  application.inject('route', 'store', 'store:main');
+  application.inject('controller', 'store', 'store:main');
+}
+
+export default {
+  name: 'store',
+  initialize: initialize
+};

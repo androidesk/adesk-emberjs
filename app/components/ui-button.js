@@ -1,3 +1,5 @@
+import Ember from "ember";
+
 var buttonView = Ember.View.extend({
     didInsertElement: function() {
         //pass
@@ -9,7 +11,9 @@ var buttonView = Ember.View.extend({
     isLoadingBinding: 'controller.isSaving',
     attributeBindings: ['style'],
     style: '',
-    layoutName: 'components/ui-button-view'
+    layoutName: 'components/ui-button'
 });
 
 Ember.Handlebars.helper('ui-button', buttonView);
+
+export default buttonView;

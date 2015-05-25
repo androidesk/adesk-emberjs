@@ -1,3 +1,5 @@
+import Ember from "ember";
+
 Ember.Model = Ember.Object.extend(Ember.Evented, {
     rootURL: '',
     rootKey: '',
