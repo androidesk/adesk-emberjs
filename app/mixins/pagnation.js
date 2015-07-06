@@ -43,4 +43,4 @@ var paginationRoute = Ember.Mixin.create({
 });
 
 
-export { paginationRoute, paginationController}
+export { paginationRoute, paginationController};

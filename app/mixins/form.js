@@ -36,7 +36,9 @@ var FormMixin = Ember.Mixin.create({
                 $this.set('msg', error);
                 try {
                     $this.send('errorCallback');
-                } catch (e) {}
+                } catch (e) {
+                    console.log(reason);
+                }
             });
         },
         createForm: function() {
